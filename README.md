@@ -26,6 +26,6 @@ Lidar node will publish a /scan topic. The parameters are in src/oradar_lidar/ms
 ## Todo
 
 - [x] Lidar drive
-- [ ] Motor drive
+- [x] Motor drive
 - [ ] Slam
 - [ ] Nav2\(depend on motor drive and slam\)
