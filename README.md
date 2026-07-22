@@ -9,8 +9,6 @@
 3. Compile. `cd winterhack_revenge` and `colcon build`.
 4. Setup environment variables. `source install/setup.bash`
 
-
-
 ## 2. Packages
 
 ### 2.1 oradar_lidar
@@ -49,13 +47,46 @@ The only thing you are adviced to change is the lidar serial port's linux device
 
 - `/scan`
 - `/tf`
-    - the `base_link` -> `lidar_frame` part.
+    - the `base_link` -> `lidar_frame` part
 
 #### 2.1.6 Subscribe Topics
 
 None
 
+### 2.2 rf2o_laser_odometry
 
+#### 2.2.1 Description
+
+From [rf2o_laser_odometry Github Repo](https://github.com/MAPIRlab/rf2o_laser_odometry).
+
+This package reads and turns the lidar `/scan` data to odometry data `/odom_rf2o`.  
+
+Why use it?  
+Because slam_toolbox need odometry data to help SLAM. Our motors do not have encoder, so we use it to get odometry. The result is not particularly good. But enough to drive slam_toolbox. Consider to use multisensor fusion in the future.
+
+#### 2.2.2 Configuration
+
+Some topic names. Default values are enough. They are in rf2o_laser_odometry.launch.py if you want to change.
+
+#### 2.2.3 Launch Files
+
+- rf2o_laser_odometry.launch.py
+    - launch the only node
+
+#### 2.2.4 Nodes
+
+- rf2o_laser_odometry
+
+#### 2.2.5 Publish Topics
+
+- `/odom_rf2o`
+    - the odom data calc from scan data
+- `/tf`
+    - the `/odom` to `/base_link` part 
+
+#### 2.2.6 Subscribe Topics
+
+- `/scan`
 
 ## 3. Todo
 
