@@ -53,6 +53,8 @@ The only thing you are adviced to change is the lidar serial port's linux device
 
 None
 
+---
+
 ### 2.2 rf2o_laser_odometry
 
 #### 2.2.1 Description
@@ -88,9 +90,44 @@ Some topic names. Default values are enough. They are in rf2o_laser_odometry.lau
 
 - `/scan`
 
-## 3. Todo
+---
+
+### 2.3 hiwonder_driver
+
+#### 2.3.1 Description
+
+Our bot use a "Hiwonder rrc board" as a expand board of RaspberryPi. Motors, arm servos, imu are connected to this board.  
+This is the ROS2 driver interacts with the rrc board.
+
+Currently, we only read the `/cmd_vel` and drive the motor.
+
+#### 2.3.2 Configuration
+
+None
+
+#### 2.3.3 Launch Files
+
+None
+
+#### 2.3.4 Nodes
+
+- `hiwonder_controller`
+
+#### 2.3.5 Publish Topics
+
+None
+
+#### 2.3.6 Subscribe Topics
+
+- `/cmd_vel`
+
+## 3. Todo or Road Map
 
 - [x] Lidar drive
 - [x] Motor drive
-- [ ] Slam
-- [ ] Nav2\(depend on motor drive and slam\)
+- [x] Slam
+    > !! accuracy problem caused by odometry !!
+- [ ] Nav2
+- [ ] Winterhack bringup launch
+- [ ] Hiwonder driver enhancement (launch/config machanism, imu publish)
+- [ ] SLAM accuracy
