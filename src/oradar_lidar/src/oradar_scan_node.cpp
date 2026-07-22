@@ -130,7 +130,7 @@ void publish_msg(rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr &pub,
         double raw_angle = scan_frame->data[i].angle;
         
         // clockwise: flip the point cloud along 0 degrees
-        double mapped_angle = clockwise ? fmod(360.0 - raw_angle, 360.0) : raw_angle;
+        double mapped_angle = clockwise ? raw_angle : fmod(360.0 - raw_angle, 360.0);
         
         if (mapped_angle < 0) mapped_angle += 360.0;
         if (mapped_angle >= 360.0) mapped_angle -= 360.0;
