@@ -17,7 +17,7 @@ def generate_launch_description():
         {'baudrate': 230400},
         {'angle_min': 0.0},
         {'angle_max': 360.0},
-        {'range_min': 0.05},
+        {'range_min': 0.075},
         {'range_max': 20.0},
         {'clockwise': False},
         {'motor_speed': 10}
@@ -29,7 +29,7 @@ def generate_launch_description():
     package='tf2_ros',
     executable='static_transform_publisher',
     name='base_link_to_base_laser',
-    arguments=['0','0','0.18','0','0','0','base_link','laser_frame']
+    arguments=['0','0','0.05','0','0','0','base_link','laser_frame']
   )
 
 

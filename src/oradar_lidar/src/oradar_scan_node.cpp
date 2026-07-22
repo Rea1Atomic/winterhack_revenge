@@ -105,87 +105,119 @@ void publish_msg(ros::Publisher *pub, full_scan_data_st *scan_frame, ros::Time s
 }
 
 #elif ROS2_FOUND
-void publish_msg(rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr &pub, full_scan_data_st *scan_frame, rclcpp::Time start,
-                 double scan_time, std::string frame_id, bool clockwise,
-                 double angle_min, double angle_max, double min_range, double max_range)
+void publish_msg(rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr &pub, 
+                 full_scan_data_st *scan_frame, 
+                 rclcpp::Time start,
+                 double scan_time, 
+                 std::string frame_id, 
+                 bool clockwise,
+                 double angle_min,
+                 double angle_max,
+                 double min_range, 
+                 double max_range)
 {
-  sensor_msgs::msg::LaserScan scanMsg;
-  int point_nums = scan_frame->vailtidy_point_num;
+    // get raw point num
+    int point_nums = scan_frame->vailtidy_point_num;
 
-  scanMsg.header.stamp = start;
-  scanMsg.header.frame_id = frame_id;
-  scanMsg.angle_min = Degree2Rad(scan_frame->data[0].angle);
-  scanMsg.angle_max = Degree2Rad(scan_frame->data[point_nums - 1].angle);
-  double diff = scan_frame->data[point_nums - 1].angle - scan_frame->data[0].angle;
-  scanMsg.angle_increment = Degree2Rad(diff/point_nums);
-  scanMsg.scan_time = scan_time;
-  scanMsg.time_increment = scan_time / point_nums;
-  scanMsg.range_min = min_range;
-  scanMsg.range_max = max_range;
+    const int TARGET_SIZE = 450; // fixed target size
 
-  scanMsg.ranges.assign(point_nums, std::numeric_limits<float>::quiet_NaN());
-  scanMsg.intensities.assign(point_nums, std::numeric_limits<float>::quiet_NaN());
+    // construct raw point set, handle clockwise
+    struct PointData { double angle_deg; float range; float intensity; };
+    std::vector<PointData> src_points;
+    src_points.reserve(point_nums);
 
-  float range = 0.0;
-  float intensity = 0.0;
-  float dir_angle;
-  unsigned int last_index = 0;
+    for (int i = 0; i < point_nums; i++) {
+        double raw_angle = scan_frame->data[i].angle;
+        
+        // clockwise: flip the point cloud along 0 degrees
+        double mapped_angle = clockwise ? fmod(360.0 - raw_angle, 360.0) : raw_angle;
+        
+        if (mapped_angle < 0) mapped_angle += 360.0;
+        if (mapped_angle >= 360.0) mapped_angle -= 360.0;
 
-  for (int i = 0; i < point_nums; i++)
-  {
-    range = scan_frame->data[i].distance * 0.001;
-    intensity = scan_frame->data[i].intensity;
-
-    if ((range > max_range) || (range < min_range))
-    {
-      range = 0.0;
-      intensity = 0.0;
+        src_points.push_back({
+            mapped_angle, 
+            scan_frame->data[i].distance * 0.001f, 
+            scan_frame->data[i].intensity
+        });
     }
 
-    if (!clockwise)
-    {
-      dir_angle = static_cast<float>(360.f - scan_frame->data[i].angle);
-    }
-    else
-    {
-      dir_angle = scan_frame->data[i].angle;
-    }
-
-    if ((dir_angle < angle_min) || (dir_angle > angle_max))
-    {
-      range = 0;
-      intensity = 0;
-    }
-
-    float angle = Degree2Rad(dir_angle);
-    unsigned int index = (unsigned int)((angle - scanMsg.angle_min) / scanMsg.angle_increment);
-    if (index < point_nums)
-    {
-      // If the current content is Nan, it is assigned directly
-      if (std::isnan(scanMsg.ranges[index]))
-      {
-        scanMsg.ranges[index] = range;
-        unsigned int err = index - last_index;
-        if (err == 2)
-        {
-          scanMsg.ranges[index - 1] = range;
-          scanMsg.intensities[index - 1] = intensity;
+    for (auto& p : src_points) {
+        while (p.angle_deg > angle_max && p.angle_deg - 360.0 >= angle_min) {
+            p.angle_deg -= 360.0;
         }
-      }
-      else
-      { // Otherwise, only when the distance is less than the current
-        //   value, it can be re assigned
-        if (range < scanMsg.ranges[index])
-        {
-          scanMsg.ranges[index] = range;
+        while (p.angle_deg < angle_min && p.angle_deg + 360.0 <= angle_max) {
+            p.angle_deg += 360.0;
         }
-      }
-      scanMsg.intensities[index] = intensity;
-      last_index = index;
     }
-  }
 
-  pub->publish(scanMsg);
+    std::sort(src_points.begin(), src_points.end(), 
+              [](const PointData& a, const PointData& b) { return a.angle_deg < b.angle_deg; });
+
+    sensor_msgs::msg::LaserScan scanMsg;
+    scanMsg.header.stamp = start;
+    scanMsg.header.frame_id = frame_id;
+
+    double target_step = (angle_max - angle_min) / (TARGET_SIZE - 1);
+    scanMsg.angle_min = Degree2Rad(angle_min);
+    scanMsg.angle_max = Degree2Rad(angle_max);
+    scanMsg.angle_increment = Degree2Rad(target_step);
+    scanMsg.scan_time = scan_time;
+    scanMsg.time_increment = scan_time / TARGET_SIZE;
+    scanMsg.range_min = min_range;
+    scanMsg.range_max = max_range;
+
+    scanMsg.ranges.assign(TARGET_SIZE, std::numeric_limits<float>::quiet_NaN());
+    scanMsg.intensities.assign(TARGET_SIZE, 0.0f);
+
+    // linear interpolation
+    for (int i = 0; i < TARGET_SIZE; i++) {
+        double target_angle = angle_min + i * target_step;
+
+        auto it = std::lower_bound(src_points.begin(), src_points.end(), target_angle,
+                                   [](const PointData& p, double val) { return p.angle_deg < val; });
+
+        float range_val = std::numeric_limits<float>::quiet_NaN();
+        float intensity_val = 0.0f;
+
+        if (src_points.empty()) {
+        } else if (it == src_points.begin()) {
+            range_val = src_points.front().range;
+            intensity_val = src_points.front().intensity;
+        } else if (it == src_points.end()) {
+            range_val = src_points.back().range;
+            intensity_val = src_points.back().intensity;
+        } else {
+            auto& p_prev = *(it - 1);
+            auto& p_next = *it;
+            
+            double a1 = p_prev.angle_deg;
+            double a2 = p_next.angle_deg;
+            double r1 = p_prev.range;
+            double r2 = p_next.range;
+            double i1 = p_prev.intensity;
+            double i2 = p_next.intensity;
+
+            if (fabs(a2 - a1) < 1e-9) {
+                range_val = r1;
+                intensity_val = i1;
+            } else {
+                double t = (target_angle - a1) / (a2 - a1);
+                range_val = r1 + (r2 - r1) * t;
+                intensity_val = i1 + (i2 - i1) * t;
+            }
+        }
+
+        if (range_val > max_range || range_val < min_range || std::isnan(range_val)) {
+            range_val = std::numeric_limits<float>::quiet_NaN();
+            intensity_val = 0.0f;
+        }
+
+        scanMsg.ranges[i] = range_val;
+        scanMsg.intensities[i] = intensity_val;
+    }
+
+    pub->publish(scanMsg);
 }
 #endif
 
