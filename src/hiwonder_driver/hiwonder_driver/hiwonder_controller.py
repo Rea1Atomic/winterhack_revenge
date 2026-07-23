@@ -42,19 +42,19 @@ class hiwonder_controller(Node):
             Positive for go ahead
         '''
         WIDTH = 0.1410  # Distance between left and right
-        LENGHT = 0.1368 # Distance between front and back
+        LENGTH = 0.1368 # Distance between front and back
         DIAMETER = 0.065    # Wheel diameter
 
-        rpm_l = - (msg.linear.x - (msg.angular.z * WIDTH)/2) / (pi * DIAMETER)
-        rpm_r = (msg.linear.x + (msg.angular.z * WIDTH)/2) / (pi * DIAMETER) 
+        rps_l = - (msg.linear.x - (msg.angular.z * (WIDTH+LENGTH))/2) / (pi * DIAMETER)
+        rps_r = (msg.linear.x + (msg.angular.z * (WIDTH+LENGTH))/2) / (pi * DIAMETER) 
 
         self.board.set_motor_speed(
-                [[1, rpm_l], [2, rpm_l], [3, rpm_r], [4, rpm_r]]
+                [[1, rps_l], [2, rps_l], [3, rps_r], [4, rps_r]]
                 )
 
         self.get_logger().info(
                 f'raw command:\t{msg.linear.x} m/s,\t{msg.angular.z:.2f} rad/s\n'
-                f'motor operation:\t{rpm_l} rpm,\t{rpm_r} rpm'
+                f'motor operation:\t{rps_l} rps,\t{rps_r} rps'
                 )
 
         
