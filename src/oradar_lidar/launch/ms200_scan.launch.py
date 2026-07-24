@@ -19,6 +19,7 @@ def generate_launch_description():
         {'angle_max': 360.0},
         {'range_min': 0.075},
         {'range_max': 20.0},
+        {'interpolation_jump_threshold': 0.30},
         {'clockwise': False},
         {'motor_speed': 10}
       ]

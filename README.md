@@ -24,6 +24,7 @@ Basicly, this driver reads and handles the lidar's data from USB port. Then publ
 > **Diff to official version**
 > 1. Made a few changes to fit humble version.
 > 2. I applied **linear interpolation** to it to make every msg published to `/scan` topic has fixed 450 points. 
+> 3. Interpolation skips large range jumps and picks the nearest raw point instead, to avoid creating floating obstacle points at object edges.
 
 **!!! DO NOT EDIT THIS PACKAGE UNLESS IT'S NECESSARY !!!**  
 

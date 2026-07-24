@@ -9,7 +9,9 @@
 #include <sensor_msgs/msg/laser_scan.hpp>
 #endif
 #include <vector>
+#include <algorithm>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <signal.h>
 #include <cmath>
@@ -114,7 +116,8 @@ void publish_msg(rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr &pub,
                  double angle_min,
                  double angle_max,
                  double min_range, 
-                 double max_range)
+                 double max_range,
+                 double interpolation_jump_threshold)
 {
     // get raw point num
     int point_nums = scan_frame->vailtidy_point_num;
@@ -201,6 +204,17 @@ void publish_msg(rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr &pub,
             if (fabs(a2 - a1) < 1e-9) {
                 range_val = r1;
                 intensity_val = i1;
+            } else if (interpolation_jump_threshold > 0.0 &&
+                       fabs(r2 - r1) > interpolation_jump_threshold) {
+                double prev_diff = fabs(target_angle - a1);
+                double next_diff = fabs(a2 - target_angle);
+                if (prev_diff <= next_diff) {
+                    range_val = r1;
+                    intensity_val = i1;
+                } else {
+                    range_val = r2;
+                    intensity_val = i2;
+                }
             } else {
                 double t = (target_angle - a1) / (a2 - a1);
                 range_val = r1 + (r2 - r1) * t;
@@ -232,6 +246,7 @@ int main(int argc, char **argv)
   int motor_speed = 10;
   double angle_min = 0.0, angle_max = 360.0;
   double min_range = 0.05, max_range = 20.0;
+  double interpolation_jump_threshold = 0.30;
   bool clockwise = false;
   uint8_t type = ORADAR_TYPE_SERIAL;
   int model = ORADAR_MS200;
@@ -264,6 +279,7 @@ int main(int argc, char **argv)
   node->declare_parameter<double>("angle_min", angle_min);
   node->declare_parameter<double>("range_max", max_range);
   node->declare_parameter<double>("range_min", min_range);
+  node->declare_parameter<double>("interpolation_jump_threshold", interpolation_jump_threshold);
   node->declare_parameter<bool>("clockwise", clockwise);
   node->declare_parameter<int>("motor_speed", motor_speed);
   node->declare_parameter<std::string>("device_model", device_model);
@@ -277,6 +293,7 @@ int main(int argc, char **argv)
   node->get_parameter("angle_min", angle_min);
   node->get_parameter("range_max", max_range);
   node->get_parameter("range_min", min_range);
+  node->get_parameter("interpolation_jump_threshold", interpolation_jump_threshold);
   node->get_parameter("clockwise", clockwise);
   node->get_parameter("motor_speed", motor_speed);
   node->get_parameter("device_model", device_model);
@@ -374,7 +391,7 @@ int main(int argc, char **argv)
                     clockwise, angle_min, angle_max, min_range, max_range);
         #elif ROS2_FOUND
         publish_msg(publisher, &scan_data, start_scan_time, scan_duration, frame_id,
-            clockwise, angle_min, angle_max, min_range, max_range);
+            clockwise, angle_min, angle_max, min_range, max_range, interpolation_jump_threshold);
         #endif
 
       }
