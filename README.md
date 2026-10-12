@@ -6,7 +6,7 @@
 
 1. Firstly, make sure you installed ros2 humble.
 2. Clone the repository at where you preferred.
-3. Compile. `cd winterhack_revenge` and `colcon build`.
+3. Compile. `cd winterhack_revenge/ros_ws/` and `colcon build`.
 4. Setup environment variables. `source install/setup.bash`
 
 ## 2. Packages
