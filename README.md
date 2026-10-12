@@ -114,7 +114,7 @@ None
 
 #### 2.3.4 Nodes
 
-- `hiwonder_controller`
+- `hiwonder_board`
 
 #### 2.3.5 Publish Topics
 

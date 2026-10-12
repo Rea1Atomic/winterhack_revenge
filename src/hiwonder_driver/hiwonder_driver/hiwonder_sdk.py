@@ -210,6 +210,12 @@ class Board:
 
     def get_imu(self):
         # 获取IMU数据，返回ax, ay, az, gx, gy, gz(obtain IMU data to return ax, ay, az, gx, gy, and gz)
+        # 单位：
+        #       ax，ay，az：g的倍数
+        #       gx，gy，gy：
+        # 单位：
+        #       ax，ay，az：g的倍数
+        #       gx，gy，gy：
         if self.enable_recv:
             try:
                 # ax, ay, az, gx, gy, gz
@@ -324,7 +330,7 @@ class Board:
         buf.append(len(data))
         buf.extend(data)
         buf.append(checksum_crc8(bytes(buf[2:])))
-        print(buf)
+        # print(buf)
         buf = bytes(buf)
         self.port.write(buf)
         # for i in buf: 
