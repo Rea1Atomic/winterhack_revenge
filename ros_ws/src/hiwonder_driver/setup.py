@@ -24,7 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'hiwonder_board = hiwonder_driver.hiwonder_board:main'
+            'hiwonder_driver = hiwonder_driver.hiwonder_driver:main'
         ],
     },
 )

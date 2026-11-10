@@ -14,7 +14,7 @@ from hiwonder_driver.hiwonder_sdk import Board
 
 class HiwonderBoard(Node):
     def __init__(self):
-        super().__init__("hiwonder_board")
+        super().__init__("hiwonder_driver")
 
         # Parameters
         self.declare_parameter("board_device", "/dev/ttyACM0")
