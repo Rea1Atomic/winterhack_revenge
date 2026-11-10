@@ -131,17 +131,17 @@ void publish_msg(rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr &pub,
 
     for (int i = 0; i < point_nums; i++) {
         double raw_angle = scan_frame->data[i].angle;
-        
+
         // clockwise: flip the point cloud along 0 degrees
         double mapped_angle = clockwise ? raw_angle : fmod(360.0 - raw_angle, 360.0);
-        
+
         if (mapped_angle < 0) mapped_angle += 360.0;
         if (mapped_angle >= 360.0) mapped_angle -= 360.0;
 
         src_points.push_back({
             mapped_angle, 
             scan_frame->data[i].distance * 0.001f, 
-            (float)scan_frame->data[i].intensity
+            scan_frame->data[i].intensity
         });
     }
 
@@ -193,7 +193,7 @@ void publish_msg(rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr &pub,
         } else {
             auto& p_prev = *(it - 1);
             auto& p_next = *it;
-            
+
             double a1 = p_prev.angle_deg;
             double a2 = p_next.angle_deg;
             double r1 = p_prev.range;
@@ -331,6 +331,7 @@ int main(int argc, char **argv)
       if (device.Connect())
       {
         std::cout << "lidar device connect succuss." << std::endl;
+        break;
       }
       else
       {
@@ -351,7 +352,7 @@ int main(int argc, char **argv)
 
     std::cout << "get lidar scan data" << std::endl;
     std::cout << "ROS topic:" << scan_topic.c_str() << std::endl;
-    
+
 		min_thr = (double)motor_speed - ((double)motor_speed  * 0.1);
 		max_thr = (double)motor_speed + ((double)motor_speed  * 0.1);
     cur_speed = device.GetRotationSpeed();
@@ -359,7 +360,7 @@ int main(int argc, char **argv)
     {
       device.SetRotationSpeed(motor_speed);
     }
-    
+
 
     #ifdef ROS_FOUND
     while (ros::ok())
@@ -380,9 +381,9 @@ int main(int argc, char **argv)
       end_scan_time = node->now();
       scan_duration = (end_scan_time.seconds() - start_scan_time.seconds());
       #endif
-      
 
-      
+
+
       if (ret)
       {
         #ifdef ROS_FOUND
@@ -397,7 +398,7 @@ int main(int argc, char **argv)
     }
 
     device.Disconnect();
-    
+
   }
 
   std::cout << "publish node end.." << std::endl;
@@ -406,6 +407,6 @@ int main(int argc, char **argv)
   #elif ROS2_FOUND
   rclcpp::shutdown();
   #endif
-  
+
   return 0;
 }
