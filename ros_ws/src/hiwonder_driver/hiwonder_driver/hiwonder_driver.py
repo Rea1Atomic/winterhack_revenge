@@ -5,7 +5,7 @@ This file defined a node that:
 '''
 import rclpy
 
-from math import pi
+from math import pi, radians
 from time import sleep
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
@@ -45,6 +45,7 @@ class HiwonderBoard(Node):
             if _data == None:
                 self.get_logger().warn("SDK returned None IMU value.")
             else:
+                print(_data)
                 for i in range(len(_data)):
                     imu_data_inc[i] += _data[i]
                 imu_data_num += 1
@@ -64,7 +65,7 @@ class HiwonderBoard(Node):
                 10)
 
         # Publisher of imu data
-        self.imu_publisher = self.create_publisher(Imu, "imu", 10)
+        self.imu_publisher = self.create_publisher(Imu, "imu/data_raw", 10)
         self.imu_timer = self.create_timer(0.05, self.imu_timer_callback)
 
         self.get_logger().info("Board initialize success!")
@@ -98,8 +99,25 @@ class HiwonderBoard(Node):
                 )
 
     def imu_timer_callback(self):
-        pass
+        imu_raw_data = None;
+        while imu_raw_data is None:
+            imu_raw_data = self.board.get_imu()
 
+        imu_raw_data_ros = Imu();
+        imu_raw_data_ros.header.frame_id = "base_link"
+        imu_raw_data_ros.header.stamp = self.get_clock().now().to_msg()
+        imu_raw_data_ros.linear_acceleration.x = imu_raw_data[1] * 9.80665
+        imu_raw_data_ros.linear_acceleration.y = -imu_raw_data[0] * 9.80665
+        imu_raw_data_ros.linear_acceleration.z = imu_raw_data[2] * 9.80665
+        imu_raw_data_ros.linear_acceleration_covariance = [0.0] * 9
+        imu_raw_data_ros.angular_velocity.x = radians(imu_raw_data[4])
+        imu_raw_data_ros.angular_velocity.y = radians(-imu_raw_data[3])
+        imu_raw_data_ros.angular_velocity.z = radians(imu_raw_data[5])
+        imu_raw_data_ros.angular_velocity_covariance = [0.0] * 9
+
+        imu_raw_data_ros.orientation_covariance[0] = -1
+
+        self.imu_publisher.publish(imu_raw_data_ros)
 
 def main(args=None):
     rclpy.init(args=args)
