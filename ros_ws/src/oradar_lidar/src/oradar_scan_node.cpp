@@ -331,7 +331,6 @@ int main(int argc, char **argv)
       if (device.Connect())
       {
         std::cout << "lidar device connect succuss." << std::endl;
-        break;
       }
       else
       {
