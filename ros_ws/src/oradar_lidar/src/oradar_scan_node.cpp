@@ -141,7 +141,7 @@ void publish_msg(rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr &pub,
         src_points.push_back({
             mapped_angle, 
             scan_frame->data[i].distance * 0.001f, 
-            scan_frame->data[i].intensity
+            (float)scan_frame->data[i].intensity
         });
     }
 
