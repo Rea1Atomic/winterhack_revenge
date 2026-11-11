@@ -114,15 +114,38 @@ None
 
 #### 2.3.4 Nodes
 
-- `hiwonder_board`
+- `hiwonder_driver`
 
 #### 2.3.5 Publish Topics
 
-None
+- `/imu/data_raw`
 
 #### 2.3.6 Subscribe Topics
 
 - `/cmd_vel`
+
+---
+
+### 2.4 winterhack_bringup
+
+#### 2.4.1 Description
+
+The bringup package for starting the project more conveniently.
+
+#### 2.4.2 Configuration
+
+In winterhack_bringup/config. Some project-wide configuration.
+
+- `nav2_params.yaml`
+
+#### 2.4.3 Launch Files
+
+- `pi.launch.py`
+    > Run this launch on RaspberryPi. This file launches the nodes or other
+    launch files should be launched on Pi.
+
+- `pc.launch.py`
+    > Run this on your PC.
 
 ---
 
@@ -132,7 +155,10 @@ None
 - [x] Motor drive
 - [x] Slam
     > !! accuracy problem caused by odometry !!
-- [ ] Nav2
-- [ ] Winterhack bringup launch
-- [ ] Hiwonder driver enhancement (launch/config machanism, imu publish)
-- [ ] SLAM accuracy
+- [x] Nav2
+    > !! param opimization needed !!
+- [x] Imu
+- [x] Winterhack bringup launch
+- [ ] Multi-sensor fusion for odometry 
+- [ ] Servo driver
+- [ ] move to ros_control
