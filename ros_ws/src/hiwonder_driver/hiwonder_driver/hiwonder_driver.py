@@ -1,7 +1,8 @@
 '''
 This file defined a node that:
+    0. Intereact with hiwonder board
     1. Subscribe and eval the /cmd_vel
-    2. Publish the /imu (in development)
+    2. Publish the /imu
 '''
 import rclpy
 
@@ -45,7 +46,6 @@ class HiwonderBoard(Node):
             if _data == None:
                 self.get_logger().warn("SDK returned None IMU value.")
             else:
-                print(_data)
                 for i in range(len(_data)):
                     imu_data_inc[i] += _data[i]
                 imu_data_num += 1
@@ -67,6 +67,12 @@ class HiwonderBoard(Node):
         # Publisher of imu data
         self.imu_publisher = self.create_publisher(Imu, "imu/data_raw", 10)
         self.imu_timer = self.create_timer(0.05, self.imu_timer_callback)
+
+        # Bus servo init
+        self.board.bus_servo_set_position(1, [[1, 500], [2, 500], [3, 312], [4, 125], [5, 500]])
+        
+        # Buzzer
+        self.board.set_buzzer(4000, 0.5, 1, 1)
 
         self.get_logger().info("Board initialize success!")
 
