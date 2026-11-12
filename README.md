@@ -148,6 +148,52 @@ In winterhack_bringup/config. Some project-wide configuration.
 - `pc.launch.py`
     > Run this on your PC.
 
+#### 2.4.4 Nodes
+
+None
+
+#### 2.4.5 Publish Topics
+
+None
+
+#### 2.4.6 Subscribe Topics
+
+None
+
+---
+
+### 2.5 landerpi_description
+
+#### 2.5.1 Description
+
+The robot model for our LanderPi mecanum bot. The URDF and Meshes were extract from original hiwonder repository. Modified to work with ros2_control.
+
+#### 2.5.2 Configuration
+
+The model is in `urdf/landerpi_mecanum.urdf`. Modify it directly to change any configuration.
+
+#### 2.5.3 Launch Files
+
+- `disc.launch.py`
+    - load the URDF and launch `robot_state_publisher`
+
+#### 2.5.4 Nodes
+
+- `robot_state_publisher`
+
+#### 2.5.5 Publish Topics
+
+- `/robot_description`
+    - the URDF of the bot
+- `/tf`
+    - the transforms for movable joints when joint states are received
+- `/tf_static`
+    - the transforms for fixed joints
+
+#### 2.5.6 Subscribe Topics
+
+- `/joint_states`
+
 ---
 
 ## 3. Todo or Road Map
