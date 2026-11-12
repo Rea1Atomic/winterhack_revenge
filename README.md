@@ -137,6 +137,7 @@ The bringup package for starting the project more conveniently.
 In winterhack_bringup/config. Some project-wide configuration.
 
 - `nav2_params.yaml`
+- `slam.yaml`
 
 #### 2.4.3 Launch Files
 

@@ -10,6 +10,8 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
+    bringup_share = get_package_share_directory('winterhack_bringup')
+
     navi_launch_path = os.path.join(
         get_package_share_directory('nav2_bringup'),
         'launch',
@@ -24,14 +26,20 @@ def generate_launch_description():
 
     return LaunchDescription([
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(slam_launch_path)
-            ),
+            PythonLaunchDescriptionSource(slam_launch_path),
+            launch_arguments={
+                'use_sim_time': 'false',
+                'slam_params_file': os.path.join(
+                    bringup_share, 'slam.yaml'
+                )
+            }.items()
+        ),
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(navi_launch_path),
             launch_arguments={
                 'use_sim_time' : 'false',
-                'params_file' : os.path.join(get_package_share_directory('winterhack_bringup'), 'nav2_params.yaml')
+                'params_file' : os.path.join(bringup_share, 'nav2_params.yaml')
             }.items()
         )
     ])

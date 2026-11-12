@@ -15,7 +15,8 @@ setup(
             'launch/pi.launch.py'
         ]),
         ('share/' + package_name, [
-            'config/nav2_params.yaml'
+            'config/nav2_params.yaml',
+            'config/slam.yaml'
         ])
     ],
     install_requires=['setuptools'],
