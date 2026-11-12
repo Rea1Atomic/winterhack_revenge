@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.8)
+project(landerpi_description)
+find_package(ament_cmake REQUIRED)
+install(DIRECTORY urdf meshes launch DESTINATION share/${PROJECT_NAME})
+install(PROGRAMS scripts/export_urdf.py scripts/validate_model.py DESTINATION lib/${PROJECT_NAME})
+install(FILES LICENSE.tools DESTINATION share/${PROJECT_NAME})
+ament_package()
