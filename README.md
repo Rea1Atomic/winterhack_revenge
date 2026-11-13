@@ -194,6 +194,34 @@ The model is in `urdf/landerpi_mecanum.urdf`. Modify it directly to change any c
 
 - `/joint_states`
 
+### 2.6 moveit_config
+
+#### 2.6.1 Description
+
+The moveit configuration for LanderPi URDF model and our action server\[still in local testing\].
+
+#### 2.6.2 Configuration
+
+User moveit2 configuration assistant to modify the configuration.  
+Config files are too much and we won't list them here. 
+
+#### 2.6.3 Launch Files
+
+Moveit2 configuration assistant generated launch files.  
+Use `move_group.launch.py` and rviz2 moveit2 plugins in current stage.
+
+#### 2.6.4 Nodes
+
+Too much
+
+#### 2.6.5 Publish Topics
+
+Too much
+
+#### 2.6.6 Subscribe Topics
+
+Too much
+
 ---
 
 ## 3. Todo or Road Map
