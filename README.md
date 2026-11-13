@@ -236,4 +236,4 @@ Too much
 - [x] Winterhack bringup launch
 - [ ] Multi-sensor fusion for odometry 
 - [ ] Servo driver
-- [ ] move to ros_control
+- [ ] Refactor the README.md to docs/
