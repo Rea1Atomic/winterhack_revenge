@@ -21,4 +21,4 @@ rsync -avh \
     "$REPO_DIR/ros_ws" \
     "$REMOTE_USERNAME@$REMOTE_IP:/tmp/winterhack_test/"
 
-ssh $REMOTE_USERNAME@$REMOTE_IP "distrobox enter ubuntu-ros -- bash -c 'source /opt/ros/humble/setup.bash;cd /tmp/winterhack_test/ros_ws;colcon build'"
+ssh $REMOTE_USERNAME@$REMOTE_IP "distrobox enter ubuntu-ros -- bash -c 'source /opt/ros/humble/setup.bash;cd /tmp/winterhack_test/ros_ws;rm src/deptrum-ros-driver-aurora930-0.2.1001/COLCON_IGNORE;colcon build --cmake-args -DSTREAM_SDK_TYPE=AURORA930'"
