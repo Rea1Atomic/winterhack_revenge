@@ -13,7 +13,7 @@
         <chain base_link="back_shell_black_link" tip_link="end_effector_link"/>
     </group>
     <group name="gripper">
-        <joint name="gripper_base_joint"/>
+        <chain base_link="gripper_left_link" tip_link="gripper_right_link"/>
     </group>
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="back_shell_black_link" link2="back_shell_middle_link" reason="Adjacent"/>
