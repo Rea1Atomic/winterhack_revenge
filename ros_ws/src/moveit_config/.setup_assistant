@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: landerpi_description
+    relative_path: urdf/landerpi_mecanum.urdf
+  srdf:
+    relative_path: config/landerpi_mecanum.srdf
+  package_settings:
+    author_name: atomic
+    author_email: 313443118@qq.com
+    generated_timestamp: 1794481263
