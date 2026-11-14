@@ -178,6 +178,13 @@ class HiwonderBoard(Node):
         state_ros_data.name.append('gripper_base_joint')
         state_ros_data.position.append(-90/180*pi - (state_sdk_data[5]-500) * pi / 750)
 
+        state_ros_data.name.append('wheel_left_front_joint')
+        state_ros_data.name.append('wheel_right_front_joint')
+        state_ros_data.name.append('wheel_left_back_joint')
+        state_ros_data.name.append('wheel_right_back_joint')
+        for i in range(4):
+            state_ros_data.position.append(0)
+
         self.joint_states_publisher.publish(state_ros_data)
 
     def arm_goal_callback(self, _goal_request):
