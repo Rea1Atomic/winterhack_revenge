@@ -24,6 +24,12 @@ def generate_launch_description():
         'online_async_launch.py'
     )
 
+    moveit_launch_path = os.path.join(
+        get_package_share_directory('moveit_config'),
+        'launch',
+        'move_group.launch.py'
+    )
+
     return LaunchDescription([
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(slam_launch_path),
@@ -41,5 +47,9 @@ def generate_launch_description():
                 'use_sim_time' : 'false',
                 'params_file' : os.path.join(bringup_share, 'nav2_params.yaml')
             }.items()
+        ),
+
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(moveit_launch_path),
         )
     ])

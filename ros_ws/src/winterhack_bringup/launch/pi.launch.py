@@ -16,6 +16,24 @@ def generate_launch_description():
         'ms200_scan.launch.py'
     )
 
+    rf2o_launch_path = os.path.join(
+        get_package_share_directory('rf2o_laser_odometry'),
+        'launch',
+        'rf2o_laser_odometry.launch.py'
+    )
+
+    desc_launch_path = os.path.join(
+        get_package_share_directory('landerpi_description'),
+        'launch',
+        'desc.launch.py'
+    )
+
+    cam_launch_path = os.path.join(
+        get_package_share_directory('deptrum-ros-driver-aurora930'),
+        'launch',
+        'aurora930_launch.py'
+    )
+
     driver_node = Node(
             package='hiwonder_driver',
             executable='hiwonder_driver',
@@ -32,18 +50,18 @@ def generate_launch_description():
             }]
     )
 
-    rf2o_launch_path = os.path.join(
-            get_package_share_directory('rf2o_laser_odometry'),
-            'launch',
-            'rf2o_laser_odometry.launch.py'
-    )
-
     return LaunchDescription([
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(lidar_launch_path)
         ),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(rf2o_launch_path)
+        ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(desc_launch_path)
+        ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(cam_launch_path)
         ),
         driver_node,
         imu_filter_node
